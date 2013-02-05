@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en" ng-app="app">
+  <head>
+    <title>Angular Login Test</title>
+    <script src="../../../components/lodash/lodash.js"></script>
+    <script src="../../../components/angular/angular.js"></script>
+    <script src="../../../components/angular-resource/angular-resource.js"></script>
+    <script src="../../../components/angular-cookies/angular-cookies.js"></script>
+    <script src="../../logger.js"></script>
+    <script src="../user.js"></script>
+    <script>
+      angular.module("app", ["cmfUser", "cmfLogger"]);
+      function AppCtrl($scope, Logger) {
+        $scope.logger = new Logger();
+      }
+    </script>
+  </head>
+  <body>
+    <div ng-controller="AppCtrl">
+      <status logger="logger"></status>
+      <login logger="logger"></login>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "angular-cmf",
+  "version": "0.0.0",
+  "dependencies": {
+    "angular": "~1.0.4",
+    "angular-resource": "~1.0.4",
+    "lodash": "~1.0.0-rc.3",
+    "angular-cookies": "~1.0.4",
+    "angular-mocks": "fabsor/bower-angular-mocks#~1.0.4",
+    "angular-scenario": "fabsor/bower-angular-scenario#~1.0.4"
+  }
+}
