@@ -1,5 +1,5 @@
 (function () {
-var cmfUser = angular.module('cmfUser', ['ngResource', 'cmfLogger']);
+var cmfUser = angular.module('cmf.user', ['ngResource', 'cmf.logger']);
 
 /**
  * The user resource expects a restful resource at
