@@ -11,6 +11,8 @@ files = [
   JASMINE_ADAPTER,
   'src/components/angular/angular.js',
   'src/components/angular-mocks/angular-mocks.js',
+  'src/components/angular-resource/angular-resource.js',
+  'src/modules/**/*.js',
   'src/modules/**/test/unit/*.js',
 ];
 
@@ -53,9 +55,9 @@ autoWatch = false;
 // - Opera
 // - Safari
 // - PhantomJS
-browsers = ['Firefox'];
+browsers = ['PhantomJS'];
 
 
 // Continuous Integration mode
 // if true, it capture browsers, run tests and exit
-singleRun = false;
+singleRun = true;
