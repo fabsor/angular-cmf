@@ -1,17 +1,22 @@
 describe('directives', function() {
-  beforeEach(inject(function ($injector) {
+  var element, scope, logger, User;
 
-  });
-  // beforeEach(inject(function ($rootScope, $compile) {
+  // Load the user module.
+  beforeEach(module('cmf.user'));
 
-  //   $compile)(
-  // });
+
   describe ("login", function() {
+    // Prepare our dependencies.
+    beforeEach(inject(function ($rootScope, $compile, Logger) {
+      scope = $rootScope;
+      scope.logger = new Logger();
+      element = $compile(
+        '<login logger="logger"></login>'
+      )(scope);
+    }));
     it('Should be possible to login', function() {
-      module(function($provide, $compile, $inject) {
-        $provide.value('version');
-        $inject(
-      });
+      scope.username = "user";
+      scope.password = "password";
     });
   });
 });
