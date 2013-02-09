@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en" ng-app="app">
+  <head>
+    <title>Log in</title>
+    <script src="../../../components/lodash/lodash.js"></script>
+    <script src="../../../components/angular/angular.js"></script>
+    <script src="../../../components/angular-resource/angular-resource.js"></script>
+    <script src="../../../components/angular-cookies/angular-cookies.js"></script>
+    <script src="../../logger/logger.js"></script>
+    <script src="../user.js"></script>
+    <script>
+      angular.module("app", ["cmf.user", "cmf.logger"]);
+    </script>
+  </head>
+  <body>
+    <div ng-controller="LoginController">
+      <status logger="logger"></status>
+      <login login="login"></login>
+    </div>
+  </body>
+</html>
