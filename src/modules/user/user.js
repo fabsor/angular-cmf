@@ -26,7 +26,7 @@ var angular;
     /**
      * Log a user in through the login service.
      */
-    LoginService.prototype.login = function (username, password, loggedInFn, loginFailedFn) {
+    LoginService.login = function (username, password, loggedInFn, loginFailedFn) {
       this.save({ "username": username, "password": password }, function (result) {
         loggedInFn(result.token);
       }, function (result) {
@@ -37,13 +37,14 @@ var angular;
     /**
      * Log a user in through the login service.
      */
-    LoginService.prototype.logout = function (token, loggedOutFn, logoutFailedFn) {
+    LoginService.logout = function (token, loggedOutFn, logoutFailedFn) {
       this.delete({ token: token  }, function (result) {
         loggedOutFn();
       }, function (result) {
         logoutFailedFn(result.errors);
       });
     };
+
     return LoginService;
   });
 
@@ -96,7 +97,7 @@ var angular;
       restrict: 'E',
       replace: true,
       scope: { login: '=login' },
-      template: '<form class="login">' +
+      template: '<form class="login" ng-submit="login()">' +
         '<input type="text" name="username" ng-model="username" placeholder="Username" required />' +
         '<input type="password" name="password" ng-model="password" placeholder="Password" required />' +
         '<input type="submit" name="submit" value="Log in" />' +
