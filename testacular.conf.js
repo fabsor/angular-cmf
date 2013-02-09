@@ -1,6 +1,5 @@
 // Testacular configuration
 
-
 // base path, that will be used to resolve files and exclude
 basePath = '';
 
@@ -11,6 +10,7 @@ files = [
   JASMINE_ADAPTER,
   'src/components/angular/angular.js',
   'src/components/angular-mocks/angular-mocks.js',
+  'src/components/angular-cookies/angular-cookies.js',
   'src/components/angular-resource/angular-resource.js',
   'src/modules/**/*.js',
   'src/modules/**/test/unit/*.js',
