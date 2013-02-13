@@ -135,7 +135,7 @@ var angular;
       restrict: 'E',
       replace: true,
       scope: { login: '=login' },
-      template: '<form class="login" ng-submit="login()">' +
+      template: '<form class="login" ng-submit="login(username, password)">' +
         '<input type="text" name="username" ng-model="username" placeholder="Username" required />' +
         '<input type="password" name="password" ng-model="password" placeholder="Password" required />' +
         '<input type="submit" name="submit" value="Log in" />' +
