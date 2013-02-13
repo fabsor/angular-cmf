@@ -22,33 +22,36 @@ var angular;
    * for creating a token to use.
    */
   cmfUser.factory('LoginService', function ($resource) {
-    var LoginService = $resource('/login/:id', {}, {
-      update: { method: 'PUT' },
-    });
-
-    /**
-     * Log a user in through the login service.
-     */
-    LoginService.login = function (username, password, loggedInFn, loginFailedFn) {
-      this.save({ "username": username, "password": password }, function (result) {
-        loggedInFn(result.token);
-      }, function (result) {
-        loginFailedFn(result.error);
+    var CreateResource = function (baseUrl) {
+      var LoginService = $resource(baseUrl + '/login/:id', {}, {
+        update: { method: 'PUT' },
       });
-    };
 
-    /**
-     * Log a user in through the login service.
-     */
-    LoginService.logout = function (token, loggedOutFn, logoutFailedFn) {
-      this.delete({ token: token  }, function (result) {
-        loggedOutFn();
-      }, function (result) {
-        logoutFailedFn(result.errors);
-      });
-    };
+      /**
+       * Log a user in through the login service.
+       */
+      LoginService.login = function (username, password, loggedInFn, loginFailedFn) {
+        this.save({ "username": username, "password": password }, function (result) {
+          loggedInFn(result.token);
+        }, function (result) {
+          loginFailedFn(result.error);
+        });
+      };
 
-    return LoginService;
+      /**
+       * Log a user in through the login service.
+       */
+      LoginService.logout = function (token, loggedOutFn, logoutFailedFn) {
+        this.delete({ token: token  }, function (result) {
+          loggedOutFn();
+        }, function (result) {
+          logoutFailedFn(result.errors);
+        });
+      };
+
+      return LoginService;
+    }
+    return CreateResource;
   });
 
   /**
@@ -74,6 +77,7 @@ var angular;
       },
     };
   });
+
 
   /**
    * A very basic login controller. Can be used to
