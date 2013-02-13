@@ -7,11 +7,14 @@ var angular;
    * The user resource expects a restful resource at
    * /user.
    */
-  cmfUser.factory("User", function ($resource) {
-    var User = $resource('/user/:id', {}, {
-      update: { method: 'PUT' },
-    });
-    return User;
+  cmfUser.factory("UserService", function ($resource) {
+    var CreateResource = function (baseUrl) {
+      var UserService = $resource(baseUrl + '/content/user/:id', {}, {
+        update: { method: 'PUT' },
+      });
+      return UserService;
+    }
+    return CreateResource;
   });
 
   /**
