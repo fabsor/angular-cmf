@@ -4,7 +4,7 @@ var angular;
 // Specify your base url here.
 var backendBaseUrl = 'http://192.168.50.2/angular-cmf/index.php';
 
-var project = angular.module("project", ["cmf.user", "ngResource", "cmf.content"]);
+var project = angular.module("project", ["cmf.user", "ngResource"]);
 
 project.config(function ($routeProvider) {
   $routeProvider
