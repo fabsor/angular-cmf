@@ -95,6 +95,37 @@ var angular;
     };
   });
 
+  // User admin helper function for controlling an
+  // admin page.
+  cmfUser.factory('UserAdmin', function () {
+    var UserAdmin = function (service, $scope) {
+      $scope.statusName = function (status) {
+        return status ? "Active" : "Blocked";
+      };
+      $scope.confirmOperation = function () {
+
+      };
+      $scope.boxesChecked = function () {
+        return _.some($scope.users, function (user) { return user.checked });
+      };
+      service.query({}, function (data) {
+        $scope.users = data;
+      });
+      $scope.performOperation = function () {
+
+      };
+    };
+    return UserAdmin;
+  });
+
+  cmfUser.factory('UserTemplates', function () {
+    return function (baseUrl) {
+      return {
+        "UserAdmin": baseUrl + '/user/templates/user-admin.html'
+      };
+    }
+  });
+
   /**
    * The login directive can be used to insert
    * a login form into a website.
