@@ -17,6 +17,16 @@ var angular;
     return CreateResource;
   });
 
+  cmfUser.factory("RoleService", function ($resource) {
+    var CreateResource = function (baseUrl) {
+      var UserService = $resource(baseUrl + '/content/role/:id', {}, {
+        update: { method: 'PUT' },
+      });
+      return RoleService;
+    }
+    return CreateResource;
+  });
+
   /**
    * The login resource is a special resource
    * for creating a token to use.
@@ -70,6 +80,7 @@ var angular;
             $cookieStore.remove("cmf_session");
           }
         };
+        session.save();
         return session;
       },
       getSession: function () {
@@ -116,14 +127,6 @@ var angular;
       };
     };
     return UserAdmin;
-  });
-
-  cmfUser.factory('UserTemplates', function () {
-    return function (baseUrl) {
-      return {
-        "UserAdmin": baseUrl + '/user/templates/user-admin.html'
-      };
-    }
   });
 
   /**
