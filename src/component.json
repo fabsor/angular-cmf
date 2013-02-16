@@ -7,6 +7,9 @@
     "lodash": "~1.0.0-rc.3",
     "angular-cookies": "~1.0.4",
     "angular-mocks": "fabsor/bower-angular-mocks#~1.0.4",
-    "angular-scenario": "fabsor/bower-angular-scenario#~1.0.4"
+    "angular-scenario": "fabsor/bower-angular-scenario#~1.0.4",
+    "bootstrap": "~2.3.0",
+    "less": "cloudhead/less.js",
+    "angular-ui": "~0.3.2"
   }
 }
