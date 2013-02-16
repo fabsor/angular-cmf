@@ -1,7 +1,7 @@
 'use strict';
 var angular;
 (function (angular) {
-  var cmfUser = angular.module('cmf.user', ['ngResource', 'cmf.logger', 'ngCookies']);
+  var cmfUser = angular.module('cmf.user', ['ngResource', 'cmf.logger', 'ngCookies', "cmf.content"]);
 
   /**
    * The user resource expects a restful resource at
@@ -113,9 +113,8 @@ var angular;
       $scope.statusName = function (status) {
         return status ? "Active" : "Blocked";
       };
-      $scope.confirmOperation = function () {
-
-      };
+      $scope.title = "Users";
+      $scope.properties = ["username", "email"];
       $scope.boxesChecked = function () {
         return _.some($scope.users, function (user) { return user.checked });
       };
@@ -127,6 +126,38 @@ var angular;
       };
     };
     return UserAdmin;
+  });
+
+  // User admin helper function for controlling an
+  // admin page.
+  cmfUser.factory('UserAdd', function () {
+    var UserAdd = function (service, typeservice, $scope) {
+      $scope.user = {};
+      $scope.properties = [
+        { type: "text", name: "username", title: "Username" },
+        { type: "password", name: "password", title: "Password" }
+      ];
+      $scope.createUser = function () {
+        service.save($scope.user);
+      }
+    };
+    return UserAdd;
+  });
+
+  // User admin helper function for controlling an
+  // admin page.
+  cmfUser.factory('UserView', function () {
+    var UserView = function (service, typeservice, $scope) {
+      $scope.user = {};
+      $scope.properties = [
+        { type: "text", name: "username", title: "Username" },
+        { type: "password", name: "password", title: "Password" }
+      ];
+      $scope.editUser = function () {
+        service.save($scope.user);
+      }
+    };
+    return UserView;
   });
 
   /**
