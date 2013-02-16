@@ -24,9 +24,11 @@ describe("Login service", function () {
   });
 
   it("should be possible to log out", function () {
-    $httpBackend.expectDELETE('/login').respond(401, { errors: ["Invalid login and password"] });
+    $httpBackend.expectDELETE('/login?token=a-token').respond(401, { errors: ["Invalid login and password"] });
     LoginService.logout("a-token", function () {
       expect(true).toBe(true);
+    }, function () {
+      expect(true).toBe(false);
     });
-  });
+ });
 });
