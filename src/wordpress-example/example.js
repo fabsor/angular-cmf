@@ -15,14 +15,18 @@ project.config(function ($routeProvider) {
 project.controller('User', function ($scope, UserService, Logger, UserAdmin, SessionService) {
   var session = SessionService.getSession();
   if (!session) {
-    // Set up backend url.
-    var User = UserService(backendBaseUrl);
-    UserAdmin(User, $scope);
+    location.path('/');
   }
+  // Set up backend url.
+  var User = UserService(backendBaseUrl);
+  UserAdmin(User, $scope);
 });
 
-project.controller('Login', function ($scope, LoginService, Logger, SessionService) {
+project.controller('Login', function ($scope, LoginService, Logger, SessionService, $location) {
   var session = SessionService.getSession();
+  if (session) {
+    $location.path('/');
+  }
   var Login = LoginService(backendBaseUrl);
   $scope.logger = new Logger();
   $scope.login = function (username, password) {
