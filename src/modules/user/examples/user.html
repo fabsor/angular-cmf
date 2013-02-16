@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en" ng-app="app">
+  <head>
+    <title>User</title>
+    <script src="../../../components/lodash/lodash.js"></script>
+    <script src="../../../components/angular/angular.js"></script>
+    <script src="../../../components/angular-resource/angular-resource.js"></script>
+    <script src="../../../components/angular-cookies/angular-cookies.js"></script>
+    <script src="../../logger/logger.js"></script>
+    <script src="../user.js"></script>
+    <link rel="stylesheet" href="example.css" />
+    <script>
+      angular.module("app", ["cmf.user", "cmf.logger"]);
+    </script>
+  </head>
+  <body>
+    <div class="container app">
+    <div ng-controller="UserListController">
+      <status logger="logger"></status>
+      <h2>Users</h2>
+      <a href="#add-user">Add user</a>
+      <input type="text" ng-model="search" placeholder="Search" />
+      <select ng-model="status">
+	<option value="">- None -</option>
+	<option value="false">Blocked</option>
+	<option value="true">Active</option>
+      </select>
+      <table class="table">
+	<tr ng-repeat="user in users | filter: search | filter: status">
+	  <td><input type="checkbox" ng-model="user.checked" /></td>
+	  <td><img src="{{user.image}}" alt="{{user.image}}"></td>
+	  <td>{{user.username}}</td>
+	  <td>{{user.email}}</td>
+	  <td>{{statusName(user.status)}}</td>
+	  <td><a href="{{user.edit}}">Edit</a> | <a href="{{user.delete}}">Delete</a></td>
+	</tr>
+      </table>
+      <div class="operations" ng-show="boxesChecked()">
+	<select ng-model="operation">
+	  <option value="">- Choose -</option>
+	  <option value="delete">Delete</option>
+	  <option value="block">Block</option>
+	  <option value="unblock">Unblock</option>
+	</select>
+	<input type="submit" ng-click="showConfirm=true" value="Submit" />
+      </div>
+      <div ng-show="showConfirm">
+	Are you sure?
+	<input type="submit" ng-click="confirmOperation()" />
+	<a ng-click="showOperationModal=false" />
+      </div>
+    </div>
+    </div>
+  </body>
+</html>
