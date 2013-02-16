@@ -89,7 +89,6 @@ var angular;
     };
   });
 
-
   /**
    * A very basic login controller. Can be used to
    * show a login screen.
