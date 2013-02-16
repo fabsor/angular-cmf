@@ -1,0 +1,32 @@
+<status logger="logger"></status>
+<h1>{{ title }}</h1>
+<a href="#/user/add">Add user</a>
+<input type="text" ng-model="search" placeholder="Search" />
+<select ng-model="status">
+  <option value="">- None -</option>
+  <option value="false">Blocked</option>
+  <option value="true">Active</option>
+</select>
+<table class="table">
+  <tr ng-repeat="user in users | filter: search | filter: status">
+    <td><input type="checkbox" ng-model="user.checked" /></td>
+    <td ng-repeat="property in properties">{{ user[property] }}</td>
+    <td><a href="{{user.edit}}">Edit</a> | <a href="{{user.delete}}">Delete</a></td>
+  </tr>
+</table>
+<div class="operations" ng-show="boxesChecked()">
+  <select ng-model="operation">
+    <option value="">- Choose -</option>
+    <option value="delete">Delete</option>
+    <option value="block">Block</option>
+    <option value="unblock">Unblock</option>
+  </select>
+  <input type="submit" ng-click="showConfirm=true" value="Submit" />
+</div>
+<div ng-show="showConfirm">
+  Are you sure?
+  <input type="submit" ng-click="confirmOperation()" />
+  <a ng-click="showOperationModal=false" />
+</div>
+</div>
+</div>

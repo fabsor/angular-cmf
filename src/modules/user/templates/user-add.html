@@ -1,0 +1,8 @@
+<status logger="logger"></status>
+<h2>Create new user</h2>
+<form ng-submit="createUser()">
+  <div class="properties" ng-repeat="property in properties">
+    <input type="{{property.type}}" name="{{property.name}}" placeholder="{{property.title}}" ng-model="user[property.name]" />
+  </div>
+  <input type="submit" value="Save">
+</form>
