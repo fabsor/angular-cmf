@@ -67,7 +67,7 @@ var angular,  _;
       template: '<div class="status">' +
         '<div class="messages" ng-repeat="(key, message) in logger.getMessages()">' +
         '<div class="message alert alert-{{message.type}}">' +
-        '<a href="#" class="close" ng-click="logger.removeMessage(key)">&times;</a>' +
+        '<a href="" class="close" ng-click="logger.removeMessage(key)">&times;</a>' +
         '{{message.message}}</div>' +
         '</div>' +
         '</div>'
