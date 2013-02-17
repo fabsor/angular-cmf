@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 var angular;
 
 var content = angular.module('cmf.content', ['ngResource']);
