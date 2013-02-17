@@ -2,16 +2,22 @@
 <html lang="en" ng-app="project">
   <head>
     <title>Angular CMF Wordpress Example</title>
+    <script src="../components/jquery/jquery.js"></script>
+    <script src="../components/jquery-ui/ui/jquery.ui.widget.js"></script>
+    <script src="../components/hallo/hallo.js"></script>
     <script src="../components/lodash/lodash.js"></script>
     <script src="../components/angular/angular.js"></script>
     <script src="../components/angular-resource/angular-resource.js"></script>
     <script src="../components/angular-cookies/angular-cookies.js"></script>
+    <script src="../components/angular-ui/build/angular-ui.js"></script>
     <script src="../modules/logger/logger.js"></script>
+    <script src="../modules/hallo/hallo.js"></script>
     <script src="../modules/content/content.js"></script>
     <script src="../modules/user/user.js"></script>
     <script src="example.js"></script>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <div ng-view></div>
+    <div ng-view class="app"></div>
   </body>
 </html>

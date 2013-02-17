@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 var angular;
 
 // Specify your base url here.
@@ -10,28 +10,32 @@ project.config(function ($routeProvider) {
   $routeProvider
     .when('/login', { controller: 'Login', template: '<status logger="logger"></status><login login="login"></login>' })
     .when('/', { controller: 'User', templateUrl: "../modules/user/templates/user-admin.html" })
-    .when('/user/add', { controller: 'UserAdd', templateUrl: "../modules/user/templates/user-add.html" });
+    .when('/user/add', { controller: 'UserAdd', templateUrl: "../modules/user/templates/user-add.html" })
+    .when('/user/:id', { controller: 'UserView', templateUrl: "../modules/user/templates/user-view.html" });
 });
 
-project.controller('UserAdd', function ($scope, UserService, TypeService, UserAdd, SessionService) {
+project.controller('UserAdd', function ($scope, UserService, TypeService, UserAdd, SessionService, $location) {
   var session = SessionService.getSession();
   if (!session) {
     $location.path('/login');
-  }
-  else {
+  } else {
     // Set up backend url.
-    var Types = TypeService(backendBaseUrl);
-    var User = UserService(backendBaseUrl);
+    var Types = TypeService(backendBaseUrl), User = UserService(backendBaseUrl);
     UserAdd(User, Types, $scope);
   }
+});
+
+project.controller('UserView', function ($scope, $routeParams, UserService, SessionService, $location, UserView, RoleService) {
+  var User = UserService(backendBaseUrl);
+  var Role = RoleService(backendBaseUrl);
+  UserView($routeParams.id, User, Role, $scope);
 });
 
 project.controller('User', function ($scope, UserService, Logger, UserAdmin, SessionService, $location) {
   var session = SessionService.getSession();
   if (!session) {
     $location.path('/login');
-  }
-  else {
+  } else {
     // Set up backend url.
     var User = UserService(backendBaseUrl);
     UserAdmin(User, $scope);
@@ -42,8 +46,7 @@ project.controller('Login', function ($scope, LoginService, Logger, SessionServi
   var session = SessionService.getSession();
   if (session) {
     $location.path('/');
-  }
-  else {
+  } else {
     var Login = LoginService(backendBaseUrl);
     $scope.logger = new Logger();
     $scope.login = function (username, password) {
