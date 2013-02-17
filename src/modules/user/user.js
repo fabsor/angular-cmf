@@ -151,31 +151,45 @@ var angular;
    * Function for viewing and potentially edit a user.
    */
   cmfUser.factory('UserView', function () {
-    var UserView = function (id, service, roleservice, $scope) {
+    var UserView = function (id, service, roleservice, logger, $scope) {
+      $scope.logger = logger;
       service.get({ id: id }, function (user) {
-        roleservice.query( {}, function (roles) {
+        roleservice.query({}, function (roles) {
           $scope.user = user;
+          $scope.show = true;
           $scope.roles = _.pluck(roles, 'name');
           $scope.changeRole = false;
-          $scope.properties = [
-            { type: "text", name: "username", title: "Username" },
-            { type: "password", name: "password", title: "Password" }
-          ];
           $scope.availableRoles = function (role) {
             var roles = _.difference($scope.roles, $scope.user.roles);
             roles.push(role);
             return roles;
-          }
+          };
           $scope.addRole = function () {
             $scope.user.roles.push("");
           };
           $scope.removeRole = function (role) {
             $scope.user.roles = _.without($scope.user.roles, role);
-          }
-          $scope.editUser = function () {
-            service.update({ id: $scope.user.id }, $scope.user);
           };
+          $scope.editUser = function () {
+            service.update(
+              { id: $scope.user.id },
+              $scope.user,
+              function () {
+                logger.log('status', "User updated");
+              },
+              function() {
+                logger.log('error', "Something went wrong.");
+              });
+          };
+        }, function (data) {
+          console.log(data);
+          logger.log("error", "Could not retrieve roles");
         });
+      }, function (data) {
+        console.log(data);
+        if (data.status === 401) {
+          logger.log("error", "You don't have access to this information.");
+        }
       });
     };
     return UserView;
@@ -190,10 +204,10 @@ var angular;
       restrict: 'E',
       replace: true,
       scope: { login: '=login' },
-      template: '<form class="login" ng-submit="login(username, password)">' +
-        '<input type="text" name="username" ng-model="username" placeholder="Username" required />' +
-        '<input type="password" name="password" ng-model="password" placeholder="Password" required />' +
-        '<input type="submit" name="submit" value="Log in" />' +
+      template: '<form class="login form-horizontal" ng-submit="login(username, password)">' +
+        '<div class="control-group"><input type="text" name="username" ng-model="username" placeholder="Username" required /></div>' +
+        '<div class="control-group"><input type="password" name="password" ng-model="password" placeholder="Password" required /></div>' +
+        '<div class="control-group"><input type="submit" name="submit" value="Log in" class="btn btn-primary" /></div>' +
         '</form>'
     };
     return directive;
