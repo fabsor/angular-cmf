@@ -1,0 +1,31 @@
+<h1>{{ user.username }}</h1>
+<form ng-submit="editUser()">
+<dl class="info">
+<dt>Username:</dt>
+<dd class="icon-edit" hallo ng-model="user.username">{{user.username}}</dd>
+<dt>Password:</dt>
+<dd ng-model="user.password">
+  <a href="" ng-click="changePassword=true" ng-show="!changePassword">Change password</a>
+
+  <input type="password" ng-show="changePassword" name="current_password" ng-model="currentPassword" placeholder="Current password" />
+  <input type="password" ng-show="changePassword" name="new_password" ng-model="user.password" placeholder="New password" />
+  <input type="password" ng-show="changePassword" name="new_password" ng-model="passwordverify" placeholder="Confirm new password" />
+ <a href="" ng-click="changePassword=false" ng-show="changePassword">Cancel</a>
+</dd>
+<dt>Roles:</dt>
+<dd>
+  <div ng-repeat="(key, role) in user.roles">
+    <a ng-click="changeRole=!changeRole" class="icon-edit"></a>
+    <span ng-show="!changeRole && role">{{ role }}</span>
+    <select ng-show="changeRole || !role" ng-model="user.roles[key]" ng-options="role for role in availableRoles()"></select>
+    <a href="" ng-click="removeRole(role)" ng-show="!$first" class="icon-minus">Remove role</a>
+  </div>
+  <a href="" class="icon-plus" ng-click="addRole()">Add role</a>
+</dd>
+
+<dt>Email:</dt>
+<dd class="icon-edit" hallo ng-model="user.email">{{user.email}}</dd>
+</div>
+<p>{{user.description}}</p>
+<input type="submit" value="Save changes">
+</form>

@@ -1,7 +1,7 @@
 'use strict';
 var angular;
 (function (angular) {
-  var cmfUser = angular.module('cmf.user', ['ngResource', 'cmf.logger', 'ngCookies', "cmf.content"]);
+  var cmfUser = angular.module('cmf.user', ['ngResource', 'cmf.logger', 'ngCookies', "cmf.content", "ui", "hallo"]);
 
   /**
    * The user resource expects a restful resource at
@@ -17,9 +17,13 @@ var angular;
     return CreateResource;
   });
 
+  /**
+   * The role service creates resources for getting
+   * roles from a content repository.
+   */
   cmfUser.factory("RoleService", function ($resource) {
     var CreateResource = function (baseUrl) {
-      var UserService = $resource(baseUrl + '/content/role/:id', {}, {
+      var RoleService = $resource(baseUrl + '/content/role/:id', {}, {
         update: { method: 'PUT' },
       });
       return RoleService;
@@ -143,18 +147,36 @@ var angular;
     return UserAdd;
   });
 
-  // User admin helper function for controlling an
-  // admin page.
+  /**
+   * Function for viewing and potentially edit a user.
+   */
   cmfUser.factory('UserView', function () {
-    var UserView = function (service, typeservice, $scope) {
-      $scope.user = {};
-      $scope.properties = [
-        { type: "text", name: "username", title: "Username" },
-        { type: "password", name: "password", title: "Password" }
-      ];
-      $scope.editUser = function () {
-        service.save($scope.user);
-      }
+    var UserView = function (id, service, roleservice, $scope) {
+      service.get({ id: id }, function (user) {
+        roleservice.query( {}, function (roles) {
+          $scope.user = user;
+          $scope.roles = _.pluck(roles, 'name');
+          $scope.changeRole = false;
+          $scope.properties = [
+            { type: "text", name: "username", title: "Username" },
+            { type: "password", name: "password", title: "Password" }
+          ];
+          $scope.availableRoles = function (role) {
+            var roles = _.difference($scope.roles, $scope.user.roles);
+            roles.push(role);
+            return roles;
+          }
+          $scope.addRole = function () {
+            $scope.user.roles.push("");
+          };
+          $scope.removeRole = function (role) {
+            $scope.user.roles = _.without($scope.user.roles, role);
+          }
+          $scope.editUser = function () {
+            service.update({ id: $scope.user.id }, $scope.user);
+          };
+        });
+      });
     };
     return UserView;
   });
