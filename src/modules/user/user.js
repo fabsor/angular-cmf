@@ -156,6 +156,7 @@ var angular;
       service.get({ id: id }, function (user) {
         roleservice.query({}, function (roles) {
           $scope.user = user;
+          $scope.context = user["@context"];
           $scope.show = true;
           $scope.roles = _.pluck(roles, 'name');
           $scope.changeRole = false;
