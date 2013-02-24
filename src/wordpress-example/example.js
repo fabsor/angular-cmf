@@ -38,7 +38,7 @@ project.controller('User', function ($scope, UserService, Logger, UserAdmin, Ses
   } else {
     // Set up backend url.
     var User = UserService(backendBaseUrl);
-    UserAdmin(User, $scope);
+    UserAdmin(new Logger(), User, $scope);
   }
 });
 
