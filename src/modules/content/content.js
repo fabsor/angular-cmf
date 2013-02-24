@@ -2,43 +2,55 @@
 var angular, _;
 var content = angular.module('cmf.content', ['ngResource']);
 
-content.factory('TypeService', function ($resource) {
-  return function (baseUrl) {
-    return $resource(baseUrl + '/types/:id');
-  };
-});
-
-content.factory("Fields", function () {
+content.provider("cmfField", function () {
   return {
     types: {
       "http://angular-cmf.org/Text": {
         name: "Text",
-        inputType: "text"
+        inputType: "text",
+        defaultWidget: "InputWidget",
+      },
+      "http://angular-cmf.org/Username": {
+        name: "Text",
+        inputType: "text",
+        defaultWidget: "InputWidget",
       },
       "http://angular-cmf.org/Number": {
         name: "Number",
         inputType: "number",
+        defaultWidget: "InputWidget",
       },
       "http://angular-cmf.org/Email": {
         name: "Email",
         inputType: "email",
+        defaultWidget: "InputWidget",
       },
       "http://angular-cmf.org/Url": {
         name: "Url",
         inputType: "url",
+        defaultWidget: "InputWidget",
       },
-      "http://angular-cmf.org/Longtext": {
+      "http://angular-cmf.org/LongText": {
         name: "LongText",
+        defaultWidget: "TextAreaWidget"
       }
+    },
+    $get: function () {
+      var self = this;
+      return function (name) {
+        return self.types[name];
+      };
     },
     getField: function (definition) {
       return this.types[definition];
+    },
+    field: function (name, definition) {
+      this.types[name] = definition;
     }
   };
 });
 
-
-content.factory("Widgets", function (Fields) {
+content.provider("cmfWidget", function (cmfFieldProvider) {
   return {
     /**
      * A collection of available widgets.
@@ -47,8 +59,13 @@ content.factory("Widgets", function (Fields) {
     widgets: {
       // The most basic of widgets, just outputs and input.
       "InputWidget": {
-        template: '<input type="{{type}}" ng-model="data" />',
-        fields: ["http://angular-cmf.org/Text", "http://angular-cmf.org/Number", "http://angular-cmf.org/Email", "http://angular-cmf.org/Url"]
+        template: '<label for="{{name}}">{{label}}</label><input type="{{type}}" ng-model="data" name="{{name}}"  ng-required="requiredfield" />',
+        fields: ["http://angular-cmf.org/Text", "http://angular-cmf.org/Number", "http://angular-cmf.org/Email", "http://angular-cmf.org/Url", "http://angular-cmf-org/Username"]
+      },
+      // The most basic of widgets, just outputs and input.
+      "TextAreaWidget": {
+        template: '<label for="{{name}}">{{label}}</label><textarea name="{{name}}" ng-model="data"></textarea>',
+        fields: ["http://angular-cmf.org/LongText"]
       }
     },
 
