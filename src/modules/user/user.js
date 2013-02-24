@@ -150,13 +150,13 @@ var angular;
   cmfUser.factory('UserAdd', function () {
     var UserAdd = function (service, typeservice, $scope) {
       $scope.user = {};
-      $scope.properties = [
-        { type: "text", name: "username", title: "Username" },
-        { type: "password", name: "password", title: "Password" }
-      ];
-      $scope.createUser = function () {
-        service.save($scope.user);
-      }
+      typeservice.get({ id: 'user' }, function (userType) {
+        $scope.context = userType.context;
+        $scope.properties = userType.properties;
+        $scope.createUser = function () {
+          service.save($scope.user);
+        };
+      });
     };
     return UserAdd;
   });
