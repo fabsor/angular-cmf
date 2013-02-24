@@ -121,7 +121,8 @@ var angular;
   // User admin helper function for controlling an
   // admin page.
   cmfUser.factory('UserAdmin', function () {
-    var UserAdmin = function (service, $scope) {
+    var UserAdmin = function (logger, service, $scope) {
+      $scope.logger = logger;
       $scope.statusName = function (status) {
         return status ? "Active" : "Blocked";
       };
@@ -132,6 +133,10 @@ var angular;
       };
       service.query({}, function (data) {
         $scope.users = data;
+      }, function (data) {
+        if (data.status === 401) {
+          logger.log("error", "Could not access this page.");
+        }
       });
       $scope.performOperation = function () {
 
