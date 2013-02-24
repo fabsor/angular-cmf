@@ -75,9 +75,20 @@ content.provider("cmfWidget", function (cmfFieldProvider) {
      *   the field type to filter for.
      */
     getWidgets: function (field) {
-      return _.filter(Fields, function (value) {
+      return _.filter(cmfFieldProvider.fields, function (value) {
         return _.contains(value.fields, field);
       });
+    },
+
+    $get: function () {
+      var self = this;
+      return function (name) {
+        return self.widgets[name];
+      };
+    },
+
+    widget: function (name, widget) {
+      this.widgets[name] = widget;
     },
 
     getWidget: function (name) {
@@ -86,34 +97,68 @@ content.provider("cmfWidget", function (cmfFieldProvider) {
   };
 });
 
+content.factory('TypeService', function ($resource) {
+  return function (baseUrl) {
+    return $resource(baseUrl + '/types/:id');
+  };
+});
+
 // Generate a complete content form based on the data returned
 // from a web service.
-content.directive("contentform", function (Fields, Widgets) {
+content.directive("contentform", function (cmfField, cmfWidget) {
   var directive = {
     restrict: 'E',
     replace: true,
     transclude: true,
-    scope: { entity: '=entity', context: '=context' },
-    template: '<form class="form"><div class="control-group" ng-repeat="(name, type) in context"><widget type="{{type}}" widget="InputWidget" data="entity[name]"></widget></div></form>'
+    scope: {
+      entity: '=entity',
+      context: '=context',
+      save: "=save",
+      properties: "=properties"
+    },
+    template: '<form class="form" ng-submit="save()">' +
+      '<div class="control-group" ng-repeat="(name, type) in context">' +
+      '<widget type="{{type}}" name="{{ name }}" data="entity[name]" requiredfield="properties[name].required" label="{{ properties[name].label }}"></widget></div><input type="submit" class="btn btn-primary" value="Save" /></form>'
   };
   return directive;
 });
 
-content.directive("widget", function (Widgets, $compile) {
+content.directive("widget", function (cmfField, cmfWidget, $compile) {
   var directive = {
     restrict: 'E',
     replace: true,
-    scope: { type: '@type', widget: "@widget", data: "=data" },
+    scope: {
+      type: '@type',
+      widget: "@widget",
+      data: "=data",
+      name: "@name",
+      label: "@label",
+      requiredfield: "=requiredfield"
+    },
     link: function (scope, element, attrs) {
-      // Find the widget we are looking for.
-      var widget = Widgets.getWidget(attrs.widget), link, template;
-      // Element types can't be set after inserted into the dom,
-      // so we need to handle that ourselves first.
-      template = widget.template.replace("{{type}}", attrs.type);
-      element.html(template);
-      link = $compile(element.contents());
-      console.log(scope);
-      link(scope);
+      // The attribute type must exist.
+      var update = function (type) {
+        if (type) {
+          var widget, widgetName, field = cmfField(attrs.type), link, template;
+          if (!field) {
+            console.log(attrs.type);
+          }
+          if (field) {
+            widgetName = attrs.widget || field.defaultWidget;
+            if (widgetName) {
+              widget = cmfWidget(widgetName);
+              // Element types can't be set after inserted into the dom,
+              // so we need to handle that ourselves first.
+              template = widget.template.replace("{{type}}", field.inputType);
+              element.html(template);
+              link = $compile(element.contents());
+              link(scope);
+            }
+          }
+        }
+      };
+      update(attrs.type);
+      scope.$watch('type', update);
     },
   };
   return directive;
