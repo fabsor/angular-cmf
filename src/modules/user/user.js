@@ -3,18 +3,27 @@ var angular;
 (function (angular) {
   var cmfUser = angular.module('cmf.user', ['ngResource', 'cmf.logger', 'ngCookies', "cmf.content", "ui", "hallo"]);
 
+  cmfUser.config(function (cmfWidgetProvider, cmfFieldProvider) {
+    cmfWidgetProvider.widget("PasswordEntry", {
+      template: '<label for="{{name}}">{{label}}</label><passwordentry password="data"></passwordentry>',
+      fields: ["http://angular-cmf.org/Password"]
+    });
+    cmfFieldProvider.field("http://angular-cmf.org/Password", {
+      name: "Password",
+      defaultWidget: "PasswordEntry"
+    });
+  });
   /**
    * The user resource expects a restful resource at
    * /user.
    */
   cmfUser.factory("UserService", function ($resource) {
-    var CreateResource = function (baseUrl) {
+    return function (baseUrl) {
       var UserService = $resource(baseUrl + '/content/user/:id', {}, {
         update: { method: 'PUT' },
       });
       return UserService;
-    }
-    return CreateResource;
+    };
   });
 
   /**
