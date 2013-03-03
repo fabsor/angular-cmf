@@ -2,16 +2,28 @@
 var angular, _;
 var cmfUser = angular.module('cmf.user', ['ngResource', 'cmf.logger', 'ngCookies', "cmf.content", "ui", "hallo"]);
 
+/**
+ * Configure fields and widgets for users and roles.
+ */
 cmfUser.config(function (cmfWidgetProvider, cmfFieldProvider) {
+  /**
+   * The password entry widget is handy for entering and
+   * verifying passwords.
+   */
   cmfWidgetProvider.widget("PasswordEntry", {
     template: '<label for="{{name}}">{{label}}</label><passwordentry password="data"></passwordentry>',
     fields: ["http://angular-cmf.org/Password"]
   });
+
+  /**
+   * Password field handler.
+   */
   cmfFieldProvider.field("http://angular-cmf.org/Password", {
     name: "Password",
     defaultWidget: "PasswordEntry"
   });
 });
+
 /**
  * The user resource expects a restful resource at
  * /user.
@@ -144,14 +156,27 @@ cmfUser.factory('UserAdmin', function () {
 
 // User admin helper function for controlling an
 // admin page.
-cmfUser.factory('UserAdd', function () {
-  var UserAdd = function (service, typeservice, $scope) {
+cmfUser.factory('UserAdd', function ($location) {
+  var UserAdd = function (logger, service, typeservice, $scope) {
     $scope.user = {};
     typeservice.get({ id: 'user' }, function (userType) {
       $scope.context = userType.context;
       $scope.properties = userType.properties;
+      $scope.logger = logger;
       $scope.createUser = function () {
-        service.save($scope.user);
+        service.save($scope.user, function () {
+          logger.addMessage("status", "User added");
+          $location.path('/');
+        }, function (data) {
+          if (data.status === 406) {
+            _.each(data.data.errors, function (error) {
+              logger.log("error", error);
+            });
+          }
+          if (data.status === 401) {
+            logger.log("error", "You don't have access to create this user.");
+          }
+        });
       };
     });
   };
@@ -167,8 +192,7 @@ cmfUser.factory('UserView', function () {
     service.get({ id: id }, function (user) {
       roleservice.query({}, function (roles) {
         $scope.user = user;
-        $scope.context = user["@context"];
-        $scope.properties = user.cmf_properties;
+        $scope.properties = _.keys(user.context());
         $scope.show = true;
         $scope.roles = _.pluck(roles, 'name');
         $scope.changeRole = false;
@@ -190,7 +214,8 @@ cmfUser.factory('UserView', function () {
             function () {
               logger.log('status', "User updated");
             },
-            function () {
+            function (error) {
+              console.log(error);
               logger.log('error', "Something went wrong.");
             });
         };

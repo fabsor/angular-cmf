@@ -30,6 +30,10 @@ content.provider("cmfField", function () {
         inputType: "url",
         defaultWidget: "InputWidget",
       },
+      "http://angular-cmf.org/Reference": {
+        name: "Reference",
+        defaultWidget: "SelectWidget",
+      },
       "http://angular-cmf.org/LongText": {
         name: "LongText",
         defaultWidget: "TextAreaWidget"
@@ -62,10 +66,18 @@ content.provider("cmfWidget", function (cmfFieldProvider) {
         template: '<label for="{{name}}">{{label}}</label><input type="{{type}}" ng-model="data" name="{{name}}"  ng-required="requiredfield" />',
         fields: ["http://angular-cmf.org/Text", "http://angular-cmf.org/Number", "http://angular-cmf.org/Email", "http://angular-cmf.org/Url", "http://angular-cmf-org/Username"]
       },
-      // The most basic of widgets, just outputs and input.
       "TextAreaWidget": {
         template: '<label for="{{name}}">{{label}}</label><textarea name="{{name}}" ng-model="data"></textarea>',
         fields: ["http://angular-cmf.org/LongText"]
+      },
+      "SelectWidget": {
+        controller: function ($scope, type, value, allowedValues) {
+          if (allowedValues) {
+            var data = allowedValues();
+          }
+        },
+        template: '<label for="{{name}}">{{label}}</label><textarea name="{{name}}" ng-model="data"></textarea>',
+        fields: ["http://angular-cmf.org/Reference"]
       }
     },
 
@@ -112,13 +124,13 @@ content.directive("contentform", function (cmfField, cmfWidget) {
     transclude: true,
     scope: {
       entity: '=entity',
-      context: '=context',
+      properties: '=properties',
       save: "=save",
-      properties: "=properties"
     },
     template: '<form class="form" ng-submit="save()">' +
-      '<div class="control-group" ng-repeat="(name, type) in context">' +
-      '<widget type="{{type}}" name="{{ name }}" data="entity[name]" requiredfield="properties[name].required" label="{{ properties[name].label }}"></widget></div><input type="submit" class="btn btn-primary" value="Save" /></form>'
+      '<div class="control-group" ng-repeat="name in properties">' +
+      '<widget entity="entity" property="{{name}}"></widget></div>' +
+      '<input type="submit" class="btn btn-primary" value="Save" /></form>'
   };
   return directive;
 });
@@ -128,27 +140,26 @@ content.directive("widget", function (cmfField, cmfWidget, $compile) {
     restrict: 'E',
     replace: true,
     scope: {
-      type: '@type',
+      entity: "=entity",
       widget: "@widget",
-      data: "=data",
-      name: "@name",
-      label: "@label",
-      requiredfield: "=requiredfield"
+      property: "@property",
     },
     link: function (scope, element, attrs) {
       // The attribute type must exist.
       var update = function (type) {
-        if (type) {
-          var widget, widgetName, field = cmfField(attrs.type), link, template;
-          if (!field) {
-            console.log(attrs.type);
-          }
+        if (attrs.entity && attrs.property) {
+          var entity = scope.entity;
+          var type = entity.context()[attrs.property];
+          var propertyInfo = entity.propertyInfo()[attrs.property];
+          var widget, widgetName, field = cmfField(type), link, template;
           if (field) {
             widgetName = attrs.widget || field.defaultWidget;
             if (widgetName) {
               widget = cmfWidget(widgetName);
-              // Element types can't be set after inserted into the dom,
+              // Element types can't be set after inserted into the dom
               // so we need to handle that ourselves first.
+              scope.label = propertyInfo.label;
+              scope.data = entity[attrs.property];
               template = widget.template.replace("{{type}}", field.inputType);
               element.html(template);
               link = $compile(element.contents());
@@ -165,15 +176,50 @@ content.directive("widget", function (cmfField, cmfWidget, $compile) {
 });
 
 /**
- * The content service
+ * The content service is the central hub for fetching information from
+ * an angular CMF repository.
  */
-content.factory('ContentService', function ($resource) {
-  var CreateResource = function (baseUrl, type) {
-    var ContentResource = $resource(baseUrl + '/content/' + type, {}, {
+content.factory('ContentService', function ($resource, cmfField, cmfWidget, TypeService) {
+  return function (baseUrl, type) {
+    var typeProperties = {}, Type = new TypeService(baseUrl), ContentResource = $resource(baseUrl + '/content/' + type + '/:id', {}, {
       update: { method: 'PUT' }
     });
+    ContentResource.prototype.type = type;
+    ContentResource.prototype.context = function () {
+      return this['@context'];
+    };
+
+    ContentResource.prototype.propertyInfo = function (reset) {
+      if (this.cmf_info && !reset) {
+        return this.cmf_info;
+      }
+      var propertyInfo = {}, type;
+      // Property info is missing. Fetch it.
+      if (!this.cmf_properties) {
+        if (typeProperties[this.type]) {
+          this.cmf_properties = typeProperties[this.type];
+        } else {
+          type = Type.query({ id: this.type });
+          this.cmf_properties = type.cmf_properties;
+        }
+      }
+      _.each(this.cmf_properties, function (info, name) {
+        if (typeof info.addable === "undefined") {
+          info.addable = true;
+        }
+        if (typeof info.editable === "undefined") {
+          info.editable = true;
+        }
+        if (typeof info.allowedValues === "string") {
+          info.allowedValues = $resource(info.allowedValues).query;
+        }
+        propertyInfo[name] = info;
+      });
+      this.cmf_info = propertyInfo;
+      return propertyInfo;
+    };
+    return ContentResource;
   };
-  return CreateResource;
 });
 
 content.directive("ctable", function () {

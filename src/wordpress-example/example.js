@@ -14,7 +14,7 @@ project.config(function ($routeProvider) {
     .when('/user/:id', { controller: 'UserView', templateUrl: "../modules/user/templates/user-view.html" });
 });
 
-project.controller('UserAdd', function ($scope, UserService, TypeService, UserAdd, SessionService, $location) {
+project.controller('UserAdd', function ($scope, UserService, TypeService, UserAdd, SessionService, $location, Logger) {
   var session = SessionService.getSession(), Types, User;
   if (!session) {
     $location.path('/login');
@@ -22,13 +22,13 @@ project.controller('UserAdd', function ($scope, UserService, TypeService, UserAd
     // Set up backend url.
     Types = new TypeService(backendBaseUrl);
     User = new UserService(backendBaseUrl);
-    UserAdd(User, Types, $scope);
+    UserAdd(new Logger(), User, Types, $scope);
   }
 });
 
-project.controller('UserView', function ($scope, $routeParams, UserService, SessionService, $location, UserView, RoleService, Logger) {
-  var User = new UserService(backendBaseUrl), Role = new RoleService(backendBaseUrl);
-  UserView($routeParams.id, User, Role, new Logger(), $scope);
+project.controller('UserView', function ($scope, $routeParams, UserService, ContentService, SessionService, $location, UserView, RoleService, Logger) {
+  var User = new UserService(backendBaseUrl), Role = new RoleService(backendBaseUrl), Content = new ContentService(backendBaseUrl, 'user'), data;
+  UserView($routeParams.id, Content, Role, new Logger(), $scope);
 });
 
 project.controller('User', function ($scope, UserService, Logger, UserAdmin, SessionService, $location) {
